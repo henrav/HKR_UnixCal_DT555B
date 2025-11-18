@@ -1,37 +1,12 @@
 #include <stdio.h>
-#include <stdbool.h>
-#include <utime.h>
-#include <time.h>
 #include "Commands.h"
 #include "string.h"
-#include <stdlib.h>
 #define INPUT_SIZE 100
 #define WELCOME_MESSAGE "Welcome, Please print ur commands now: "
-#define NO_INPUT_MESSAGE "No input recived\n"
 #define TOO_LONG_MESSAGE "Message too long, please try a shorter message\n"
-#define OK       0
-#define NO_INPUT 1
-#define TOO_LONG 2
-#define unix_day 86400
-#define torsdag 7 //nu i efterhand? varför tors == 7? varför inte bara == 0?
-#define fredag  1
-#define lördag  2
-#define söndag  3
-#define måndag  4
-#define tisdag  5
-#define onsdag  6
+#define torsdag 4
 #define januari 1
 #define februari 2
-#define mars 3
-#define april 4
-#define maj 5
-#define juni 6
-#define juli 7
-#define augusti 8
-#define september 9
-#define oktober 10
-#define november 11
-#define december 12
 
 
 
@@ -45,7 +20,7 @@ const char *weeks[] = {
     "Sa"
 };
 
-const enum daysMonths{
+ enum daysMonths{
     jan = 31,
     feb = 28,
     mar = 31,
@@ -67,6 +42,7 @@ const int enumArray[] = {
 
 
 void printDaysWeek(int month, int year, int week);
+void printSpaces(int amount);
 
 
 
@@ -115,6 +91,12 @@ void printmonth(int months) {
     }
 
 }
+
+/**
+ * checks if current year is leap year
+ * @param year
+ * @return
+ */
 int isLeapYear(int year){
     int leap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
     if (leap) {
@@ -123,27 +105,56 @@ int isLeapYear(int year){
     return 0;
 }
 
+
+/**
+ * returns the startday of the year
+ *
+ * @param year
+ * @return INT: startday
+ */
 int getstartDay(int year) {
     if (year == 1970) {
         return torsdag;
     }
 
     int totalDays = 0;
-    for (int y = 1970; y < year; y++) {
-        totalDays += 365 + isLeapYear(y);
+    if (year > 1970){
+        for (int y = 1970; y < year; y++) {
+            totalDays += 365 + isLeapYear(y);
+        }
+    }else{
+        for (int y = year; y < 1970; y++){
+            totalDays += 365 + isLeapYear(y);
+        }
+        totalDays = -totalDays;
     }
 
     totalDays %= 7;
+    if (totalDays < 0) totalDays += 7;
+
     return (torsdag + totalDays) % 7;
 }
 
 
 
-int getStartDayMonthPerWeek(int month, int year, int week){
+/**
+ *
+ * basicly this func returns the start day of the month
+ *
+ * @param month current month u wanna get
+ * @param year current year
+ * @param week the week
+ * @return
+ */
+int getStartDayMonth(int month, int year){
+    int startdayyear = getstartDay(year);
+    if (month == 1){
+        return startdayyear;
+    }
     int isLeapFlag = isLeapYear(year);
     int daysBeforeMonth = 0;
-    int startdayyear = getstartDay(year);
     //if month == 1, this will not run, days before jan == 0
+    // count the nr of days before this month
     for (int i = 1; i < month; i++){
         //if mars, count check if feb was leap, add extra
         if (isLeapFlag && i == 2){
@@ -152,59 +163,47 @@ int getStartDayMonthPerWeek(int month, int year, int week){
             daysBeforeMonth += enumArray[i - 1];
         }
     }
-
     daysBeforeMonth %= 7;
+    startdayyear = (startdayyear + daysBeforeMonth ) % 7;
 
-    startdayyear = (startdayyear + daysBeforeMonth + (week * 7)) % 7;
 
     return startdayyear;
 }
 
 
 
-void printCenterSpaces(int width, int i) ;
 
 void printCal(CallOptions *options){
     int startMonth = options->haveMonth ? options->month : januari;
     int year = options->haveYear ? options->year : 2025;
-    int span = options->haveMonth ? 1 : options->haveSpan ? options->span : 12;
+    int span = options->haveSpan ? options->span : options->haveMonth ? 1 : 12;
     int it = 0;
-    int width =  options->haveMonth ? 1 : options->haveWidth ? options->width : 3;
+    int width =  options->haveWidth ? options->width : 3;
+    int baseMonth  = startMonth;
+    int baseYear   = year;
     printf("\n");
-    printCenterSpaces(width, 4);
-    int monthCounter = 0;
-    printf("%d", year);
-    printf("\n");
-    /*
-     * Tog alldeless för lång tid att fixa till denna print function, allt annat var enkelt i jämnförelse
-     *
-          width == 3, nrOfMonths == 4, då ska man printa 2 rader
-
-          jan       feb         mars  == rad 0
-          april                       == rad 1
-
-          4+3=7; 7-1=6; 6/3=2 == 2 rader
-
-
-          width == 3, nrOfMonths == 3, då ska man printa 1 rad
-
-          jan       feb         mars  == rad 0
-
-          3+3=6; 6-1=5; 5/3=1.666 == 1 rad
-     */
     for (int i = 0; i < (span + width - 1) / width; i++){
-
         // hur många ska jag printa?
         //defaulta till "width" om det finns månader att spara
         int totPrintLine = span - it > width ? width : span - it;
 
+        printSpaces(7);
 
-        if (monthCounter > 11){
-            printCenterSpaces(width,4 );
-            printf("%d", ++year);
-            printf("\n");
-            monthCounter = 0;
+        for (int a = baseMonth - 1 + it; a <  baseMonth - 1 + it + totPrintLine; a++){
+            if (i == 0 && a == baseMonth - 1 + it){
+                printf("%d", year++);
+                printSpaces(22);
+            }else{
+                if (a % 12 == 0){
+                    printf("%d", year++);
+                    printSpaces(22);
+                }else{
+                    printSpaces(26);
+                }
+            }
         }
+        printf("\n");
+
         //Printa månaders namn
         for (int x = 0; x < totPrintLine; x++){
             if (x!=0){
@@ -212,13 +211,9 @@ void printCal(CallOptions *options){
                     printf(" ");
                 }
             }
-
-            printmonth(startMonth + (it ));
-            it++;
-            monthCounter++;
+            printmonth(startMonth + it + x);
         }
         printf("\n");
-
 
         //printa veckodagarnas namn
         for (int a = 0; a < totPrintLine; a++){
@@ -229,17 +224,20 @@ void printCal(CallOptions *options){
         }
         printf("\n");
 
-        // printa datum för alla veckor
+        //print dates for each week for each month on the current row
         for (int c = 0; c < 6; c++){
-            for (int b = totPrintLine; b > 0; b--){
-                int currentMonth = startMonth + it - b;
-                currentMonth = ((currentMonth - 1) % 12) + 1;
-                printDaysWeek(currentMonth ,year, c);
+            for (int b = 0; b < totPrintLine; b++){
+                int month = baseMonth - 1 + it + b;
+                int currentYear  = baseYear + month / 12;
+                int currentMonth = month % 12 + 1;
+                printDaysWeek(currentMonth ,currentYear, c);
                 printf("     ");
             }
             printf("\n");
         }
         printf("\n");
+        //add nr of months printed to counter
+        it += totPrintLine;
     }
 
 
@@ -248,18 +246,14 @@ void printCal(CallOptions *options){
 
 void printDaysWeek(int month, int year, int week) {
     //månadens start dag eg "tisdag" "torsdag" osvosv
-    int startday = getStartDayMonthPerWeek(month, year, week);
-
-    // normalisera till söndag == 0;
-    // annars söndag == 3 enligt unix grejen;
-    startday = (startday + 4) % 7;
+    int startday = getStartDayMonth(month, year);
 
     int date = 1 + (7 * week);
     if (week != 0){
-        date = 1 + (7 * week) - startday;
+        date -= startday; // calculate date
     }
     if (week != 0){
-        startday = 0;
+        startday = 0; // index 0, sunday, if not first week, then  week starts at sunday
     }
 
 
@@ -267,11 +261,11 @@ void printDaysWeek(int month, int year, int week) {
     for(int i = 0; i < 7; i++){
         if (startday == i){
             //special case for feb
-            int val = enumArray[month - 1];
-            if (isleapFlag && month == februari) val++;
+            int val = enumArray[month - 1]; // get nr of days in month
+            if (isleapFlag && month == februari) val++; // add a one exrta for feb in leapyear
             if (date <= val){
                 if (date > 9){
-                    printf("%d ", date);
+                    printf("%d ", date); // remove extra spaces for dates with 2 numbers
                 }else{
                     printf(" %d ", date);
                 }
@@ -288,8 +282,8 @@ void printDaysWeek(int month, int year, int week) {
 
 }
 
-void printCenterSpaces(int width, int offset){
-    for (int i = 0; i < ((width * 24) / 2) - offset; i++){
+void printSpaces(int amount){
+    for (int i = 0; i < amount; i++){
         printf(" ");
     }
 }
@@ -297,6 +291,8 @@ void printCenterSpaces(int width, int offset){
 
 int main(void) {
     char input[INPUT_SIZE];
+
+    // from some guy on stackoverflow
     for (;;) {
         fflush(stdout);
         printf("type 'help' for help for help with args\n");

@@ -108,12 +108,12 @@ static int parse_cal_flags(int argc, char **argv, CallOptions *options) {
             options->width = (int) width;
         }else if (argv[i][0] == '-') {
             printf("unknown flag: %s\n", argv[i]);
-            // didnt have time or energy to come up with another solutions that didnt involve sending uncessicary variable names
+            // didnt have time to come up with another solutions that didnt involve sending uncessicary args
             printHelpCal(argc,argv);
             return 0;
         } else {
             printf("Unexpected argument: %s\n", argv[i]);
-            // didnt have time or energy to come up with another solutions that didnt involve sending uncessicary variable names
+            // didnt have time  to come up with another solutions that didnt involve sending uncessicary args
             printHelpCal(argc,argv);
             return 0;
         }
