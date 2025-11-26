@@ -11,26 +11,33 @@ void printHelpCal(int argc, char **argv){
     printf("valid arguments for command 'cal' are: \n");
     printf("\n");
     printf("-m [month]: \n");
-    printf("\tUSAGE: '-m [1-12]'\n");
+    printf("\tUSAGE: -m [1-12]\n");
+    printf("\tEXAMPLE: cal -m 3\n");
+    printf("\tRESULT: above example will print calendar starting from mars\n");
     printf("\tNOTES: ");
     printf("\tEnables selection of month to print. '-m 1' = january, '-m 12' = december\n");
-    printf("\tUsage of this arg will nullify arg '-w' and '-s'\n");
     printf("\tWhen not specified, 'cal' will print all 12 months of the year unless the arg '-s' is used");
     printf("\n\n");
     printf("-y [year]: \n");
-    printf("\tUSAGE: 'cal -y [0-9999]' \n");
+    printf("\tUSAGE: cal -y [0-9999] \n");
+    printf("\tEXAMPLE: cal -y 2015\n");
+    printf("\tRESULT: above example will print calendar for year 2015\n");
     printf("\tNOTES: ");
     printf("\tEnables selection of year to print. 'cal -y 2025' prints cal for 2025\n");
     printf("\tWhen not specified, 'cal' will print the year 2025");
     printf("\n\n");
     printf("-s [span]: \n");
-    printf("\tUSAGE: 'cal -s [1-9999]' \n");
+    printf("\tUSAGE: cal -s [1-9999] \n");
+    printf("\tEXAMPLE: cal -s 50\n");
+    printf("\tRESULT: above example will print calendar spanning 50 months into the future\n");
     printf("\tNOTES: ");
-    printf("\tSpan of months, eg: 'cal -s 50' = print 50 months into the future. when combined with '-m', this arg wont do anything\n");
+    printf("\tSpan of months, eg: 'cal -s 50' = print 50 months into the future.\n");
     printf("\tWhen not specified, the span of 'cal' will be either 1 or 12 depending on if the '-m' arg is used");
     printf("\n\n");
     printf("-w [width]: \n");
-    printf("\tUSAGE: 'cal -w [1-9999]' \n");
+    printf("\tUSAGE: cal -w [1-9999] \n");
+    printf("\tEXAMPLE: cal -w 6\n");
+    printf("\tRESULT: above example will print calendar with each row containing 6 months\n");
     printf("\tNOTES: ");
     printf("\tEnables selection of how many months will be printed on each row\n");
     printf("\tExample: 'cal -w 12' will print:\n");
@@ -44,6 +51,12 @@ void printHelpCal(int argc, char **argv){
     printf("\t\t\tMAY\n");
     printf("\t\t\t...\n");
     printf("\t\t\t...\n");
+    printf("\n");
+    printf("GENERAL NOTES: combination of arguments are possible and they are not positional.\n");
+    printf("EXAMPLE OF VALID COMMANDS: \n ");
+    printf("\t cal -y 2015 -m 4  :  this will print year 2015 starting from month 4 (april)\n ");
+    printf("\t cal -m 4 -y 2015 -s 100  :  this will print year 2015 starting from month 4 (april) spanning 100 months into the future\n ");
+    printf("\t cal -m 4 -y 2015 -s 100 -w 5  :  this will print year 2015 starting from month 4 (april) spanning 100 months into the future with 5 months per row\n ");
     printf("\n");   printf("\n");
 
     printf("\n");   printf("\n");
@@ -108,12 +121,12 @@ static int parse_cal_flags(int argc, char **argv, CallOptions *options) {
             options->width = (int) width;
         }else if (argv[i][0] == '-') {
             printf("unknown flag: %s\n", argv[i]);
-            // didnt have time to come up with another solutions that didnt involve sending uncessicary args
+            // didnt have time to come up with another solutions that didnt involve sending unnecessary args
             printHelpCal(argc,argv);
             return 0;
         } else {
             printf("Unexpected argument: %s\n", argv[i]);
-            // didnt have time  to come up with another solutions that didnt involve sending uncessicary args
+            // didnt have time  to come up with another solutions that didnt involve sending unnecessary args
             printHelpCal(argc,argv);
             return 0;
         }
@@ -175,7 +188,7 @@ const Command* checkCommand(const char *string){
         }
     }
     printf("no command found for command: %s\n", string);
-    printf("DID U MEAN 'cal', 'exit' ? \n");
+    printf("DID U MEAN 'cal', 'exit' or 'help' ? \n");
     printf("\n");
     return NULL;
 }

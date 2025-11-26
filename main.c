@@ -197,40 +197,32 @@ void printCal(CallOptions *options){
                 if (a % 12 == 0){
                     printf("%d", year++);
                     printSpaces(22);
-                }else{
-                    printSpaces(26);
-                }
+                } else  printSpaces(26);
             }
         }
         printf("\n");
 
         //Printa månaders namn
         for (int x = 0; x < totPrintLine; x++){
-            if (x!=0){
-                for (int a = x; a < x + 6; a++){
-                    printf(" ");
-                }
-            }
+            if (x!=0) printf("     ");
             printmonth(startMonth + it + x);
         }
         printf("\n");
 
         //printa veckodagarnas namn
         for (int a = 0; a < totPrintLine; a++){
-            for (int b = 0; b < 7; b++){
-                printf("%s ", weeks[b]);
-            }
+            for (int b = 0; b < 7; b++) printf("%s ", weeks[b]);
             printf("     ");
         }
         printf("\n");
 
         //print dates for each week for each month on the current row
-        for (int c = 0; c < 6; c++){
+        for (int week = 0; week < 6; week++){
             for (int b = 0; b < totPrintLine; b++){
                 int month = baseMonth - 1 + it + b;
                 int currentYear  = baseYear + month / 12;
                 int currentMonth = month % 12 + 1;
-                printDaysWeek(currentMonth ,currentYear, c);
+                printDaysWeek(currentMonth ,currentYear, week);
                 printf("     ");
             }
             printf("\n");
@@ -247,15 +239,9 @@ void printCal(CallOptions *options){
 void printDaysWeek(int month, int year, int week) {
     //månadens start dag eg "tisdag" "torsdag" osvosv
     int startday = getStartDayMonth(month, year);
-
     int date = 1 + (7 * week);
-    if (week != 0){
-        date -= startday; // calculate date
-    }
-    if (week != 0){
-        startday = 0; // index 0, sunday, if not first week, then  week starts at sunday
-    }
-
+    if (week != 0) date -= startday;
+    if (week != 0) startday = 0;
 
     int isleapFlag = isLeapYear(year);
     for(int i = 0; i < 7; i++){
@@ -264,22 +250,14 @@ void printDaysWeek(int month, int year, int week) {
             int val = enumArray[month - 1]; // get nr of days in month
             if (isleapFlag && month == februari) val++; // add a one exrta for feb in leapyear
             if (date <= val){
-                if (date > 9){
-                    printf("%d ", date); // remove extra spaces for dates with 2 numbers
-                }else{
-                    printf(" %d ", date);
-                }
+                if (date > 9) printf("%d ", date);
+                else  printf(" %d ", date);
                 startday++;
                 date++;
-            }else{
-                printf("   ");
-            }
+            }else printf("   ");
 
-        }else{
-            printf("   ");
-        }
+        }else printf("   ");
     }
-
 }
 
 void printSpaces(int amount){
