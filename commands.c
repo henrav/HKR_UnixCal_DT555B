@@ -183,19 +183,25 @@ int tokenizeInput(char *command, char **argv, int maxLength){
 
 
 void checkCommand(int argc, char* argv[]){
+
+
     if (argc > 1){
-        for (int i = 0; i < cmdTableSize; i++) {
-            if (commandTable[i].name && strcmp(argv[1], commandTable[i].name) == 0) {
-                commandTable[i].fn(argc - 2, &argv[2]);
-                return;
+        if (argv[1][0] != '-'){
+            for (int i = 0; i < cmdTableSize; i++) {
+                if (commandTable[i].name && strcmp(argv[1], commandTable[i].name) == 0) {
+                    commandTable[i].fn(argc - 2, &argv[2]);
+                    return;
+                }
             }
+            fprintf(stderr, "Unknown command: %s\n", argv[1]);
+            return;
+        }else{
+            commandTable[0].fn(argc - 1, &argv[1]);
+            return;
         }
     }
-    if (argv[1][0] == '-') {
-        commandTable[0].fn(argc - 1, &argv[1]);
-        return;
-    }
-    fprintf(stderr, "Unknown command: %s\n", argv[1]);
+    commandTable[0].fn(0, NULL);
+    return;
 }
 /*
 

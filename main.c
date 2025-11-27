@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 #include "string.h"
 #define INPUT_SIZE 100
@@ -8,6 +9,9 @@
 #define januari 1
 #define februari 2
 #include "Commands.h"
+int today_day   = 0;
+int today_month = 0;
+int today_year  = 0;
 
 const char *weeks[] = {
     "Su",
@@ -169,13 +173,20 @@ int getStartDayMonth(int month, int year){
     return startdayyear;
 }
 
-
+void initToday(void) {
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    today_day   = t->tm_mday;
+    today_month = t->tm_mon + 1;
+    today_year  = t->tm_year + 1900;
+}
 
 
 void printCal(CallOptions *options){
-    int startMonth = options->haveMonth ? options->month : januari;
-    int year = options->haveYear ? options->year : 2025;
-    int span = options->haveSpan ? options->span : options->haveMonth ? 1 : 12;
+    initToday();
+    int startMonth = options->haveMonth ? options->month : today_month;
+    int year = options->haveYear ? options->year : today_year;
+    int span = options->haveSpan ? options->span : 1;
     int it = 0;
     int width =  options->haveWidth ? options->width : 3;
     int baseMonth  = startMonth;
@@ -249,8 +260,15 @@ void printDaysWeek(int month, int year, int week) {
             int val = enumArray[month - 1]; // get nr of days in month
             if (isleapFlag && month == februari) val++; // add a one exrta for feb in leapyear
             if (date <= val){
-                if (date > 9) printf("%d ", date);
-                else  printf(" %d ", date);
+                int is_today =
+                        (year  == today_year  &&
+                         month == today_month &&
+                         date  == today_day);
+                if (is_today) {
+                    printf("\x1b[107;30m%2d\x1b[0m ", date);
+                } else {
+                    printf("%2d ", date);
+                }
                 startday++;
                 date++;
             }else printf("   ");
