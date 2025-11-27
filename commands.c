@@ -8,42 +8,42 @@
 #include <ctype.h>
 
 void printHelpCal(int argc, char **argv){
-    printf("valid arguments for command 'cal' are: \n");
+    printf("valid arguments for command 'mycal' are: \n");
     printf("\n");
     printf("-m [month]: \n");
-    printf("\tUSAGE: -m [1-12]\n");
-    printf("\tEXAMPLE: cal -m 3\n");
+    printf("\tUSAGE: '-m [1-12]'\n");
+    printf("\tEXAMPLE: 'mycal -m 3'\n");
     printf("\tRESULT: above example will print calendar starting from mars\n");
     printf("\tNOTES: ");
     printf("\tEnables selection of month to print. '-m 1' = january, '-m 12' = december\n");
-    printf("\tWhen not specified, 'cal' will print all 12 months of the year unless the arg '-s' is used");
+    printf("\tWhen not specified, 'mycal' will print all 12 months of the year unless the arg '-s' is used");
     printf("\n\n");
     printf("-y [year]: \n");
-    printf("\tUSAGE: cal -y [0-9999] \n");
-    printf("\tEXAMPLE: cal -y 2015\n");
+    printf("\tUSAGE: 'mycal -y [0-9999]' \n");
+    printf("\tEXAMPLE: 'mycal -y 2015'\n");
     printf("\tRESULT: above example will print calendar for year 2015\n");
     printf("\tNOTES: ");
     printf("\tEnables selection of year to print. 'cal -y 2025' prints cal for 2025\n");
-    printf("\tWhen not specified, 'cal' will print the year 2025");
+    printf("\tWhen not specified, 'mycal' will print the year 2025");
     printf("\n\n");
     printf("-s [span]: \n");
-    printf("\tUSAGE: cal -s [1-9999] \n");
-    printf("\tEXAMPLE: cal -s 50\n");
+    printf("\tUSAGE: 'mycal -s [1-9999]' \n");
+    printf("\tEXAMPLE: 'mycal -s 50'\n");
     printf("\tRESULT: above example will print calendar spanning 50 months into the future\n");
     printf("\tNOTES: ");
-    printf("\tSpan of months, eg: 'cal -s 50' = print 50 months into the future.\n");
-    printf("\tWhen not specified, the span of 'cal' will be either 1 or 12 depending on if the '-m' arg is used");
+    printf("\tSpan of months, eg: 'mycal -s 50' = print 50 months into the future.\n");
+    printf("\tWhen not specified, the span of 'mycal' will be either 1 or 12 depending on if the '-m' arg is used");
     printf("\n\n");
     printf("-w [width]: \n");
-    printf("\tUSAGE: cal -w [1-9999] \n");
-    printf("\tEXAMPLE: cal -w 6\n");
+    printf("\tUSAGE: 'mycal -w [1-9999]' \n");
+    printf("\tEXAMPLE: 'mycal -w 6'\n");
     printf("\tRESULT: above example will print calendar with each row containing 6 months\n");
     printf("\tNOTES: ");
     printf("\tEnables selection of how many months will be printed on each row\n");
-    printf("\tExample: 'cal -w 12' will print:\n");
+    printf("\tExample: 'mycal -w 12' will print:\n");
     printf("\tJAN      FEB      MAR      APR      MAY      ...      ...\n");
     printf("\n");
-    printf("\tExample: 'cal -w 1' will print:\n");
+    printf("\tExample: 'mycal -w 1' will print:\n");
     printf("\t\t\tJAN\n");
     printf("\t\t\tFEB\n");
     printf("\t\t\tMAR\n");
@@ -54,9 +54,9 @@ void printHelpCal(int argc, char **argv){
     printf("\n");
     printf("GENERAL NOTES: combination of arguments are possible and they are not positional.\n");
     printf("EXAMPLE OF VALID COMMANDS: \n ");
-    printf("\t cal -y 2015 -m 4  :  this will print year 2015 starting from month 4 (april)\n ");
-    printf("\t cal -m 4 -y 2015 -s 100  :  this will print year 2015 starting from month 4 (april) spanning 100 months into the future\n ");
-    printf("\t cal -m 4 -y 2015 -s 100 -w 5  :  this will print year 2015 starting from month 4 (april) spanning 100 months into the future with 5 months per row\n ");
+    printf("\t mycal -y 2015 -m 4  :  this will print year 2015 starting from month 4 (april)\n ");
+    printf("\t mycal -m 4 -y 2015 -s 100  :  this will print year 2015 starting from month 4 (april) spanning 100 months into the future\n ");
+    printf("\t mycal -m 4 -y 2015 -s 100 -w 5  :  this will print year 2015 starting from month 4 (april) spanning 100 months into the future with 5 months per row\n ");
     printf("\n");   printf("\n");
 
     printf("\n");   printf("\n");
@@ -74,7 +74,7 @@ static int parse_cal_flags(int argc, char **argv, CallOptions *options) {
             }
             char *end;
             long year = strtol(argv[++i], &end, 10);
-            if (*end) {
+            if (*end || year < 1 || year > 9999) {
                 printf("year must be a number \n");
                 return 0;
             }
@@ -100,10 +100,11 @@ static int parse_cal_flags(int argc, char **argv, CallOptions *options) {
             }
             char *end;
             long span = strtol(argv[++i], &end, 10);
-            if (*end) {
+            if (*end || span < 1 || span > 9999) {
                 printf("span must be a number \n");
                 return 0;
             }
+
             options->haveSpan = 1;
             options->span = (int) span;
         }else if (strcmp(argv[i], "-w") == 0){
@@ -144,9 +145,9 @@ void command_exit(int argc, char **argv)
 {
     exit(0);
 }
-const Command commandTable[]={
+Command commandTable[]={
         {
-            "cal",
+            "mycal",
             cal_command
         },{
             "exit",
@@ -181,19 +182,24 @@ int tokenizeInput(char *command, char **argv, int maxLength){
 
 
 
-const Command* checkCommand(const char *string){
-    for (int i = 0; i < cmdTableSize; i++ ){
-        if (commandTable[i].name && strcmp(string, commandTable[i].name) == 0){
-            return &commandTable[i];
+void checkCommand(int argc, char* argv[]){
+    if (argc > 1){
+        for (int i = 0; i < cmdTableSize; i++) {
+            if (commandTable[i].name && strcmp(argv[1], commandTable[i].name) == 0) {
+                commandTable[i].fn(argc - 2, &argv[2]);
+                return;
+            }
         }
     }
-    printf("no command found for command: %s\n", string);
-    printf("DID U MEAN 'cal', 'exit' or 'help' ? \n");
-    printf("\n");
-    return NULL;
+    if (argv[1][0] == '-') {
+        commandTable[0].fn(argc - 1, &argv[1]);
+        return;
+    }
+    fprintf(stderr, "Unknown command: %s\n", argv[1]);
 }
+/*
 
-void command_lookup(const char *command){
+void command_lookup(char *command){
     char buf[256];
     strncpy(buf, command, sizeof buf - 1);
     buf[sizeof buf - 1] = '\0';
@@ -211,4 +217,5 @@ void command_lookup(const char *command){
     cmd->fn(argCount, args);
 
 }
+*/
 

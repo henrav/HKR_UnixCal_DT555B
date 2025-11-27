@@ -9,7 +9,7 @@
 typedef void (*functionPointer)(int argc, char **argv);
 
 typedef struct {
-    const char       *name;
+    char       *name;
     functionPointer  fn;
 } Command;
 
@@ -20,9 +20,11 @@ typedef struct {
     int haveWidth, width;
 } CallOptions;
 
-extern  void command_lookup(const char *name);
-extern  void cal_command(int argc, char ** argv);
-extern void printCal(CallOptions *options);
 
+
+void command_lookup(char *name);
+void cal_command(int argc, char ** argv);
+void printCal(CallOptions *options);
+void checkCommand(int argc, char* argv[]);
 
 #endif //KRISTIANSTADCLAB3UNIXCALENDER_COMMANDS_H

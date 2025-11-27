@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "Commands.h"
+
 #include "string.h"
 #define INPUT_SIZE 100
 #define WELCOME_MESSAGE "Welcome, Please print ur commands now: "
@@ -7,8 +7,7 @@
 #define torsdag 4
 #define januari 1
 #define februari 2
-
-
+#include "Commands.h"
 
 const char *weeks[] = {
     "Su",
@@ -266,6 +265,13 @@ void printSpaces(int amount){
     }
 }
 
+int main(int argc, char* argv[])
+{
+    checkCommand(argc, argv);
+    return 0;
+}
+
+ /*
 
 int main(void) {
     char input[INPUT_SIZE];
@@ -294,3 +300,4 @@ int main(void) {
 
     }
 }
+*/
